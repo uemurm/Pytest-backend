@@ -1,0 +1,7 @@
+# pip install --requirement requirements.txt
+
+fastapi
+uvicorn
+pytest
+pydantic[email]
+httpx
