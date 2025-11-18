@@ -4,10 +4,10 @@ from app.main import app, users_store
 
 @pytest.fixture
 def client():
-    """各テスト前に users_store をリセット"""
-    users_store.clear()  # テスト間の状態污染防止
+    """Reset users_store before each test"""
+    users_store.clear()
     yield TestClient(app)
-    users_store.clear()  # クリーンアップ
+    users_store.clear()
 
 @pytest.fixture
 def test_user():

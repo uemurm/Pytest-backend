@@ -1,16 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from app.schemas import UserCreate, UserUpdate, User
 
-app = FastAPI(title="My SaaS Backend")
+app = FastAPI(title="Do Pytest Backend")
 
-# 状態管理（簡易）
-users_store = {}
+users_store = {}    # Be aware that this is not a list but a dictionary.
 next_id = 1
 
 
 @app.post("/users", status_code=201, response_model=User)
 def create_user(user: UserCreate):
-    """ユーザー作成"""
     global next_id
     user_id = next_id
     next_id += 1
@@ -27,13 +25,11 @@ def create_user(user: UserCreate):
 
 @app.get("/users", response_model=list[User])
 def list_users():
-    """ユーザー一覧取得"""
     return list(users_store.values())
 
 
 @app.get("/users/{user_id}", response_model=User)
 def get_user(user_id: int):
-    """ユーザー取得"""
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")
     return users_store[user_id]
@@ -41,7 +37,6 @@ def get_user(user_id: int):
 
 @app.patch("/users/{user_id}", response_model=User)
 def update_user(user_id: int, user_update: UserUpdate):
-    """ユーザー更新"""
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -54,7 +49,6 @@ def update_user(user_id: int, user_update: UserUpdate):
 
 @app.delete("/users/{user_id}", status_code=204)
 def delete_user(user_id: int):
-    """ユーザー削除"""
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")
     del users_store[user_id]
