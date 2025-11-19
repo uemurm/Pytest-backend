@@ -1,7 +1,9 @@
+from http.client import responses
+
 import pytest
 
 
-class TestUserCRUD:
+class TestUserCreate:
 
     def test_create_user(self, client, test_user):
         response = client.post("/users", json=test_user)
@@ -12,16 +14,6 @@ class TestUserCRUD:
         assert data["email"] == test_user["email"]
         assert "id" in data
 
-    def test_create_user_with_age_being_zero(self, client):
-        user = {
-            'name': 'David',
-            'email': 'test@example.com',
-            'age': 0,
-        }
-        response = client.post("/users", json=user)
-
-        assert response.status_code == 201
-
     def test_create_user_without_name(self, client):
         user = {
             'email': 'test@example.com',
@@ -31,15 +23,33 @@ class TestUserCRUD:
 
         assert response.status_code == 422  # Unprocessable Entity, ex. Validation Error
 
-    def test_create_user_with_negative_age(self, client):
-        user = {
-            'name': 'David',
-            'email': 'test@example.com',
-            'age': -1,
-        }
-        response = client.post("/users", json=user)
+    @pytest.mark.parametrize("email,expected_status", [
+        ("valid@example.com", 201),
+        ("invalid.email", 422),  # Email validation fails
+        ("", 422),
+    ])
+    def test_create_user_email_validation(self, client, test_user, email, expected_status):
+        """Test email validation"""
+        test_user["email"] = email
+        response = client.post("/users", json=test_user)
 
-        assert response.status_code == 422  # Unprocessable Entity, ex. Validation Error
+        assert response.status_code == expected_status
+
+    @pytest.mark.parametrize('age,expected_status', [
+        # Valid ages
+        (0, 201), (1, 201), (52, 201), (150, 201),
+        # Invalid ages
+        (-1, 422), (-100, 422), (151, 422), (200, 422)
+    ])
+    def test_create_user_age_validation(self, client, test_user, age, expected_status):
+        """Test age validation"""
+        test_user['age'] = age
+        response = client.post('/users', json=test_user)
+
+        assert response.status_code == expected_status
+
+
+class TestUserRead:
 
     def test_list_users(self, client, test_user, another_test_user):
         client.post("/users", json=test_user)
@@ -55,18 +65,8 @@ class TestUserCRUD:
 
         assert response.status_code == 404
 
-    # todo: Consolidate these tests with those above.
-    @pytest.mark.parametrize("email,expected_status", [
-        ("valid@example.com", 201),
-        ("invalid.email", 422),  # Email validation fails
-        ("", 422),
-    ])
-    def test_create_user_validation(self, client, test_user, email, expected_status):
-        """Test email validation"""
-        test_user["email"] = email
-        response = client.post("/users", json=test_user)
 
-        assert response.status_code == expected_status
+class TestUserUpdate:
 
     def test_update_nonexistent_user(self, client):
         response = client.patch('/users/999', json={'name': 'New Name'})
