@@ -55,6 +55,7 @@ class TestUserCRUD:
 
         assert response.status_code == 404
 
+    # todo: Consolidate these tests with those above.
     @pytest.mark.parametrize("email,expected_status", [
         ("valid@example.com", 201),
         ("invalid.email", 422),  # Email validation fails
@@ -66,3 +67,8 @@ class TestUserCRUD:
         response = client.post("/users", json=test_user)
 
         assert response.status_code == expected_status
+
+    def test_update_nonexistent_user(self, client):
+        response = client.patch('/users/999', json={'name': 'New Name'})
+
+        assert response.status_code == 404  # Resource not found
