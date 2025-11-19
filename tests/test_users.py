@@ -12,6 +12,35 @@ class TestUserCRUD:
         assert data["email"] == test_user["email"]
         assert "id" in data
 
+    def test_create_user_with_age_being_zero(self, client):
+        user = {
+            'name': 'David',
+            'email': 'test@example.com',
+            'age': 0,
+        }
+        response = client.post("/users", json=user)
+
+        assert response.status_code == 201
+
+    def test_create_user_without_name(self, client):
+        user = {
+            'email': 'test@example.com',
+            'age': 30,
+        }
+        response = client.post("/users", json=user)
+
+        assert response.status_code == 422  # Unprocessable Entity, ex. Validation Error
+
+    def test_create_user_with_negative_age(self, client):
+        user = {
+            'name': 'David',
+            'email': 'test@example.com',
+            'age': -1,
+        }
+        response = client.post("/users", json=user)
+
+        assert response.status_code == 422  # Unprocessable Entity, ex. Validation Error
+
     def test_list_users(self, client, test_user, another_test_user):
         client.post("/users", json=test_user)
         client.post("/users", json=another_test_user)
