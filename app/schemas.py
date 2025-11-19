@@ -3,7 +3,7 @@ from typing import Optional
 
 class UserCreate(BaseModel):
     name: str
-    email: EmailStr  # A class for Email validation
+    email: EmailStr  # A Pydantic class for Email validation
     age: int
 
 class UserUpdate(BaseModel):
