@@ -8,7 +8,7 @@ next_id = 1
 
 
 @app.post("/users", status_code=201, response_model=User)   # 201: Created. ex. Resource successfully created by POST
-def create_user(user: UserCreate):
+async def create_user(user: UserCreate):
     global next_id
     user_id = next_id
     next_id += 1
@@ -24,19 +24,19 @@ def create_user(user: UserCreate):
 
 
 @app.get("/users", response_model=list[User])
-def list_users():
+async def list_users():
     return list(users_store.values())
 
 
 @app.get("/users/{user_id}", response_model=User)
-def get_user(user_id: int):
+async def get_user(user_id: int):
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")
     return users_store[user_id]
 
 
 @app.patch("/users/{user_id}", response_model=User)
-def update_user(user_id: int, user_update: UserUpdate):
+async def update_user(user_id: int, user_update: UserUpdate):
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -48,7 +48,7 @@ def update_user(user_id: int, user_update: UserUpdate):
 
 
 @app.delete("/users/{user_id}", status_code=204)    # 204: No content. ex. Successfully deleted and nothing to return
-def delete_user(user_id: int):
+async def delete_user(user_id: int):
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")
     del users_store[user_id]
