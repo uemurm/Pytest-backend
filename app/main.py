@@ -7,7 +7,8 @@ users_store = {}    # Be aware that this is not a list but a dictionary.
 next_id = 1
 
 
-@app.post("/users", status_code=201, response_model=User)   # 201: Created. ex. Resource successfully created by POST
+# 201: Created. ex. Resource successfully created by POST
+@app.post("/users", status_code=201, response_model=User)
 async def create_user(user: UserCreate):
     global next_id
     user_id = next_id
@@ -47,7 +48,8 @@ async def update_user(user_id: int, user_update: UserUpdate):
     return updated_user
 
 
-@app.delete("/users/{user_id}", status_code=204)    # 204: No content. ex. Successfully deleted and nothing to return
+# 204: No content. ex. Successfully deleted and nothing to return
+@app.delete("/users/{user_id}", status_code=204)
 async def delete_user(user_id: int):
     if user_id not in users_store:
         raise HTTPException(status_code=404, detail="User not found")

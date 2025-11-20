@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app, users_store
+from httpx import AsyncClient, ASGITransport
 
 
 @pytest.fixture
@@ -10,6 +11,7 @@ def client():
     yield TestClient(app)
     users_store.clear()
 
+
 @pytest.fixture
 def test_user():
     return {
@@ -17,6 +19,7 @@ def test_user():
         "email": "john@example.com",
         "age": 30
     }
+
 
 @pytest.fixture
 def another_test_user():
@@ -27,14 +30,12 @@ def another_test_user():
     }
 
 
-from httpx import AsyncClient, ASGITransport
-
-
 @pytest.fixture
 async def async_client():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
+
 
 @pytest.fixture
 async def async_test_user():

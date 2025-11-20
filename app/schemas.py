@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 
+
 class UserCreate(BaseModel):
     name: str = Field(
         min_length=1, max_length=100,
@@ -13,7 +14,9 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     name: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    age: Optional[int] = Field(default=None, ge=0, le=150)  # Same rule applies when updating
+    age: Optional[int] = Field(default=None,
+                               # Same rule applies as creating
+                               ge=0, le=150)
 
 
 class User(UserCreate):
