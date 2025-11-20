@@ -3,6 +3,42 @@ from http.client import responses
 import pytest
 
 
+class TestUserCreateAsync:
+
+    @pytest.mark.asyncio
+    async def test_create_user_async(self, async_client, async_test_user):
+        """<span style="color: #FFD700;">非同期でユーザー作成</span>"""
+        response = await async_client.post("/users", json=async_test_user)
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["name"] == async_test_user["name"]
+        assert data["email"] == async_test_user["email"]
+        assert "id" in data
+
+    @pytest.mark.asyncio
+    async def test_list_users_async(self, async_client, async_test_user):
+        """<span style="color: #FFD700;">非同期でユーザー一覧取得</span>"""
+        # <span style="color: #FFD700;">🟢 SUCCESS: 複数の await を実行</span>
+        await async_client.post("/users", json=async_test_user)
+
+        response = await async_client.get("/users")
+
+        assert response.status_code == 200
+        assert len(response.json()) >= 1
+
+    @pytest.mark.asyncio
+    async def test_get_user_async(self, async_client, async_test_user):
+        """<span style="color: #FFD700;">非同期でユーザー取得</span>"""
+        create_response = await async_client.post("/users", json=async_test_user)
+        user_id = create_response.json()["id"]
+
+        get_response = await async_client.get(f"/users/{user_id}")
+
+        assert get_response.status_code == 200
+        assert get_response.json()["id"] == user_id
+
+
 class TestUserCreate:
 
     def test_create_user(self, client, test_user):

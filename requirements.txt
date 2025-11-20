@@ -5,3 +5,5 @@ uvicorn
 pytest
 pydantic[email]
 httpx
+pytest-asyncio
+flake8

@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app, users_store
 
+
 @pytest.fixture
 def client():
     """Reset users_store before each test"""
@@ -23,4 +24,20 @@ def another_test_user():
         "name": "Jane Doe",
         "email": "jane@example.com",
         "age": 25
+    }
+
+
+from httpx import AsyncClient, ASGITransport
+
+
+@pytest.fixture
+async def async_client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+
+@pytest.fixture
+async def async_test_user():
+    return {
+        'name': 'Alice Async', 'email': 'alice@async.com', 'age': 30,
     }
