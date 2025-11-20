@@ -23,6 +23,18 @@ class TestUserCreate:
 
         assert response.status_code == 422  # Unprocessable Entity, ex. Validation Error
 
+    @pytest.mark.parametrize('name,expected_status', [
+        # Valid names
+        ('A', 201), ('John', 201), ('Alice Johnson Smith', 201), ('A' * 100, 201),
+        # Invalid names
+        ('', 422), ('A' * 101, 422), ('A' * 200, 422),
+    ])
+    def test_create_user_name_validation(self, client, test_user, name, expected_status):
+        test_user['name'] = name
+        response = client.post('/users', json=test_user)
+
+        assert response.status_code == expected_status
+
     @pytest.mark.parametrize("email,expected_status", [
         ("valid@example.com", 201),
         ("invalid.email", 422),  # Email validation fails
