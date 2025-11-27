@@ -5,7 +5,6 @@ class TestUserCreateAsync:
 
     @pytest.mark.asyncio
     async def test_create_user_async(self, async_client, async_test_user):
-        """<span style="color: #FFD700;">非同期でユーザー作成</span>"""
         response = await async_client.post("/users", json=async_test_user)
 
         assert response.status_code == 201
@@ -16,8 +15,6 @@ class TestUserCreateAsync:
 
     @pytest.mark.asyncio
     async def test_list_users_async(self, async_client, async_test_user):
-        """<span style="color: #FFD700;">非同期でユーザー一覧取得</span>"""
-        # <span style="color: #FFD700;">🟢 SUCCESS: 複数の await を実行</span>
         await async_client.post("/users", json=async_test_user)
 
         response = await async_client.get("/users")
@@ -27,7 +24,6 @@ class TestUserCreateAsync:
 
     @pytest.mark.asyncio
     async def test_get_user_async(self, async_client, async_test_user):
-        """<span style="color: #FFD700;">非同期でユーザー取得</span>"""
         create_response = await async_client.post("/users", json=async_test_user)
         user_id = create_response.json()["id"]
 
